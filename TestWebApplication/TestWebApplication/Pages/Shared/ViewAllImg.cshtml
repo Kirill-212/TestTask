@@ -1,0 +1,101 @@
+﻿@using TestWebApplication.Models
+@model IndexViewModel<Img>
+
+
+<div style="margin:20px;border:dotted">
+    <p>Check the box if you want to remove more than one</p>
+    <h1>Imgs</h1>
+    <table class="table">
+        <tr><th>Id img</th><th>Img</th><th>Option</th></tr>
+        @foreach (Img u in Model.Items)
+        {
+            <tr>
+                <td>@u.ImgsId</td>
+                <td>
+                    <img style='width:80px; height:60px;' src="data:image/jpeg;base64,@(Convert.ToBase64String(u.ImageData))" />
+                </td>
+                <td>
+                    <div style="border:dotted">
+                        <form method="post" asp-action="PutImg" asp-controller="Img" enctype="multipart/form-data">
+                            <h5>Put Img</h5>
+                            <input id="ImgsId" name="ImgsId" type="hidden" value="@u.ImgsId" />
+                            <input type="file" name="ImageData" /><br>
+                            <input type="submit" value="Put" />
+                        </form>
+                    </div>
+                    <div>
+                        <input type="checkbox" class="checkbox" style="margin:14px" name="@u.ImgsId" value="@u.ImgsId"><Br>
+                    </div>
+                    <a href="/Img/Delete/@u.ImgsId">Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+    @if (Model.PageViewModel.HasPreviousPage)
+    {
+        <a asp-action="GetAll"
+           asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
+           class="btn btn-outline-dark">
+            <i class="glyphicon glyphicon-chevron-left"></i>
+            Назад
+        </a>
+    }
+    @if (Model.PageViewModel.HasNextPage)
+    {
+        <a asp-action="GetAll"
+           asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
+           class="btn btn-outline-dark">
+            Вперед
+            <i class="glyphicon glyphicon-chevron-right"></i>
+        </a>
+    }
+</div>
+
+<div style="margin:20px;border:dotted">
+    <form method="post" asp-action="PostImg" asp-controller="Img" enctype="multipart/form-data">
+        <h2>Post Img</h2>
+        <input type="file" name="ImageData" /><br>
+        <input type="submit" value="Post" />
+    </form>
+</div>
+<div style="margin:20px;border:dotted">
+    <form method="post" asp-action="PostImport" asp-controller="Img" enctype="multipart/form-data">
+        <h2>Import</h2>
+        <input type="file" name="file" /><br>
+        <input type="submit" value="Import" />
+    </form>
+</div>
+<div style="margin:20px;border:dotted">
+    <form method="post" asp-action="PostExport" asp-controller="Img" enctype="multipart/form-data">
+        <h2>Export</h2>
+        <input type="submit" value="Export" />
+    </form>
+</div>
+<div style="margin:20px;border:dotted">
+    <input type="button" onclick="Delete()" value="Detele mote than one" />
+</div>
+
+<script>
+    function getCheckedCheckBoxes() {
+        var checkboxes = document.getElementsByClassName('checkbox');
+        var checkboxesChecked = [];
+        for (var index = 0; index < checkboxes.length; index++) {
+            if (checkboxes[index].checked) {
+                checkboxesChecked.push(parseInt(checkboxes[index].value));
+            }
+        }
+        return checkboxesChecked;
+    }
+    async function Delete() {
+        let url = "https://localhost:44363/Img"
+        console.log(getCheckedCheckBoxes())
+        let response = await fetch(url + "/DeleteArrayItems", {
+            method: 'Delete',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ Items: getCheckedCheckBoxes() })
+        })
+        window.location.href = url + "/GetAllImgs"
+    }
+</script>

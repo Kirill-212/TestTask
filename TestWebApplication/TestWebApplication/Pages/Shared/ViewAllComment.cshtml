@@ -1,0 +1,105 @@
+﻿@using TestWebApplication.Models
+@model IndexViewModel<Comment>
+
+
+<div style="margin:20px;border:dotted">
+    <form method="get" asp-action="GetAllComments" asp-controller="Comment">
+
+        <input id="searchParam" name="searchParam" type="text" value="" />
+        <input type="submit" value="Search" />
+    </form>
+    <a href="~/Comment/GetAllComments">Refresh</a>
+    <h1>Comments</h1>
+    <table class="table">
+        <tr><th>Id Comment</th><th>Title</th><th>Description</th><th>Img</th><th>Option</th></tr>
+        @foreach (Comment u in Model.Items)
+        {
+            <tr>
+                <td>@u.CommentsId</td>
+                <td>
+                    @u.Title
+                </td>
+                <td>
+                    @u.Description
+                </td>
+                <td>
+                    <img style='width:80%; height:60%;' src="data:image/jpeg;base64,@(Convert.ToBase64String(u.Img.ImageData))" />
+                </td>
+                <td>
+                    <div style="border:dotted">
+                        <form method="post" asp-action="PutComment" asp-controller="Comment">
+                            <h2>Put Comment</h2>
+                            <input id="CommentsId" name="CommentsId" type="hidden" value="@u.CommentsId" />
+                            <label>Title</label><br />
+                            <input type="text" name="Title" /><br />
+                            <label>Description</label><br />
+                            <input type="text" name="Description" /><br />
+                            <label>Img</label>
+                            <div class="dropDownList"></div><br />
+                            <input type="submit" value="Put" />
+                        </form>
+
+                    </div>
+                    <a href="/Comment/Delete/@u.CommentsId">Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+    @if (Model.PageViewModel.HasPreviousPage)
+    {
+        <a asp-action="GetAll"
+           asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
+           class="btn btn-outline-dark">
+            <i class="glyphicon glyphicon-chevron-left"></i>
+            back
+        </a>
+    }
+    @if (Model.PageViewModel.HasNextPage)
+    {
+        <a asp-action="GetAll"
+           asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
+           class="btn btn-outline-dark">
+            next
+            <i class="glyphicon glyphicon-chevron-right"></i>
+        </a>
+    }
+</div>
+<div style="margin:20px;border:dotted">
+    <form method="post" asp-action="PostComment" asp-controller="Comment">
+        <h2>Post Comment</h2>
+        <label>Title</label><br />
+        <input type="text" name="Title" /><br />
+        <label>Description</label><br />
+        <input type="text" name="Description" /><br />
+        <label>Img</label>
+        <div class="dropDownList"></div><br />
+        <input type="submit" value="Post" />
+    </form>
+    <script>
+        GetAllId()
+        async function GetAllId() {
+            let url = "https://localhost:44363/Img"
+            let response = await fetch(url + "/GetAllID");
+            if (response.ok) {
+                let data = await response.json();
+                let html = "<select id='ImgsId' name='ImgsId' is='ms-dropdown' style='width: 300px;'>"
+                if (Array.isArray(data)) {
+
+                    data.forEach(r => {
+                        html += "<option id='ImgsId' name='ImgsId' value='" + r + "' data-image=' " + url + "/GetImage/" + r + "'></option>"
+                    })
+                } else {
+                    html += "<option value='" + data + "' data-image=' " + url + "/GetImage/" + data + "'></option>"
+                }
+                html += "</select>"
+
+                document.querySelectorAll(".dropDownList").forEach(r =>
+                    r.innerHTML = html
+                )
+            } else {
+                alert("Ошибка HTTP: " + response.status);
+            }
+        }
+    </script>
+</div>
+

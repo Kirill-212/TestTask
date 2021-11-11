@@ -1,0 +1,21 @@
+﻿@page
+    @using System.Linq;
+    @using System.Collections.Generic;
+    @using Microsoft.AspNetCore.Mvc.ModelBinding;
+@model TestWebApplication.Pages.Shared.IndexModel
+@{
+ List<string> GetErrorListFromModelState(ModelStateDictionary modelState)
+        {
+            var query = from state in modelState.Values
+                        from error in state.Errors
+                        select error.ErrorMessage;
+            var errorList = query.ToList();
+            return errorList;
+        }
+}
+<div>
+    @foreach (String u in GetErrorListFromModelState(ViewBag.ModelState))
+    {
+    <h4>@u</h4>
+    }
+</div>
