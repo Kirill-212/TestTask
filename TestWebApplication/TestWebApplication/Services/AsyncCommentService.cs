@@ -11,7 +11,7 @@ namespace TestWebApplication.Services
 {
     public class AsyncCommentService : IAsyncCommentService<Comment>
     {
-        private readonly int pageSize = 10;
+        private readonly int pageSize = 5;
         private readonly IAsyncRepositoryComment<Comment> asyncCommentRepository;
         private readonly IMapper _mapper;
         private readonly IAsyncImgService<Img> asyncImgService;
@@ -32,7 +32,9 @@ namespace TestWebApplication.Services
 
         public async Task<Comment> FindById(int id)
         {
-            return await asyncCommentRepository.FindById(id);
+            Comment comment = await asyncCommentRepository.FindById(id);
+            if (comment != null) return comment;
+            throw new Exception("Id comment is not valid");
         }
 
         public async Task<IEnumerable<Comment>> GetAll()
@@ -57,6 +59,7 @@ namespace TestWebApplication.Services
         public async Task Remove(int id)
         {
             Comment remove_comment = await FindById(id);
+            if (remove_comment == null) throw new Exception("Id comment is not valid");
             await asyncCommentRepository.Remove(remove_comment);
         }
 

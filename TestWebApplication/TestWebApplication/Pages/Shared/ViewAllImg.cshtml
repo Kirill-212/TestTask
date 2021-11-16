@@ -33,7 +33,7 @@
     </table>
     @if (Model.PageViewModel.HasPreviousPage)
     {
-        <a asp-action="GetAll"
+        <a asp-action="GetAllImgs"
            asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
            class="btn btn-outline-dark">
             <i class="glyphicon glyphicon-chevron-left"></i>
@@ -42,7 +42,7 @@
     }
     @if (Model.PageViewModel.HasNextPage)
     {
-        <a asp-action="GetAll"
+        <a asp-action="GetAllImgs"
            asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
            class="btn btn-outline-dark">
             Вперед
@@ -87,9 +87,9 @@
         return checkboxesChecked;
     }
     async function Delete() {
-        let url = "https://localhost:44363/Img"
+        let url ="/Img"
         console.log(getCheckedCheckBoxes())
-        let response = await fetch(url + "/DeleteArrayItems", {
+        await fetch(url + "/DeleteArrayItems", {
             method: 'Delete',
             headers: {
                 'Content-Type': 'application/json'

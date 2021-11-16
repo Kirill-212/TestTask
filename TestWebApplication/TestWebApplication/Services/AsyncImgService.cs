@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace TestWebApplication.Services
 {
     public class AsyncImgService : IAsyncImgService<Img>
     {
-        private readonly int pageSize = 10;
+        private readonly int pageSize = 5;
         private readonly IAsyncRepositoryImg<Img> asyncImgRepository;
         private readonly IMapper _mapper;
         public AsyncImgService(IAsyncRepositoryImg<Img> imgRepository, IMapper mapper)
@@ -74,7 +75,9 @@ namespace TestWebApplication.Services
 
         public async Task<byte[]> GetImage(int id)
         {
-            return (await asyncImgRepository.FindById(id)).ImageData;
+            Img img = await asyncImgRepository.FindById(id);
+            if (img!=null) return img.ImageData;
+            throw new Exception("Id img is not valid");
         }
 
         public async Task Import(IFormFile item)
@@ -92,7 +95,8 @@ namespace TestWebApplication.Services
         public async Task Remove(int id)
         {
             Img remove_imgs = await FindById(id);
-            await asyncImgRepository.Remove(remove_imgs);
+            if(remove_imgs==null) throw new Exception("Id img is not valid");
+            await asyncImgRepository.Remove(remove_imgs);       
         }
 
         public async Task RemoveRange(int[] items)

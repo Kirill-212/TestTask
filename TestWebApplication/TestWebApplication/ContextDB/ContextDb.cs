@@ -10,7 +10,7 @@ namespace TestWebApplication.ContextDB
         public ContextDb(DbContextOptions<ContextDb> options)
             : base(options)
         {
-            Database.EnsureCreated();
+          //  Database.EnsureCreated();
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
